@@ -1,0 +1,44 @@
+name: QR-SIDE installation check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.4'
+          use-public-rspm: true
+
+      - name: Install system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            libfontconfig1-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            libglpk-dev
+
+      - name: Install QR-SIDE
+        env:
+          QRSIDE_REF: ${{ github.head_ref || github.ref_name }}
+        run: |
+          Rscript -e 'source("install_qrside.R"); install_qrside(ref = Sys.getenv("QRSIDE_REF"))'
+
+      - name: Smoke test package loading
+        run: |
+          Rscript -e 'library(QRSIDE); stopifnot(exists("run_QRSIDE", envir = asNamespace("QRSIDE"), inherits = FALSE)); stopifnot(exists("CountDeconvolution", envir = asNamespace("SpatialDecon"), inherits = FALSE)); cat("QR-SIDE installation smoke test passed\n")'

@@ -17,14 +17,19 @@ Imports:
   mclust (>= 6.1),
   scater (>= 1.26.1),
   scran (>= 1.26.2),
+  SC.MEB,
   SpatialDecon
 LinkingTo: 
   Rcpp,
   BH,
   RcppArmadillo
-SystemRequirements: C++11
+SystemRequirements: C++14
 Suggests: 
   testthat (>= 3.0.0)
+Remotes:
+  Shufeyangyi2015310117/SC.MEB
 Additional_repositories: 
   https://bioconductor.org/packages/release/bioc
+URL: https://github.com/SpatialOmics-pj/QR-SIDE
+BugReports: https://github.com/SpatialOmics-pj/QR-SIDE/issues
 RoxygenNote: 7.3.1

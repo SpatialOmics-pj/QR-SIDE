@@ -1,0 +1,10 @@
+^\.git$
+^\.github$
+^\.DS_Store$
+^.*\.DS_Store$
+^QRSIDE_.*\.tar\.gz$
+^SpatialDecon_.*\.tar\.gz$
+^install_qrside\.R$
+^scdata$
+^spdata$
+^tutorial$
