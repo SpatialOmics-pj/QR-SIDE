@@ -1,98 +1,82 @@
-# Robust spatial cell-type deconvolution with qualitative reference for spatial transcriptomics
+# QR-SIDE
 
-Package: QRSIDE
+**Robust spatial cell-type deconvolution with qualitative reference for spatial transcriptomics**
 
-Version: 1.0.0
+QR-SIDE performs spatial cell-type deconvolution without requiring a quantitative single-cell reference. It uses qualitative marker-gene information, a mixture Poisson model, latent spot-separable topics, and a Potts model to incorporate spatial continuity.
 
-Title: Robust Spatial Cell-Type Deconvolution with Qualitative Reference for Spatial Transcriptomics
-Description: QR-SIDE is a package for cell type deconvolution on spatial transcriptomics datasets developed by Jin Liu's lab. It has the capability to effectively leverage a large number of non-marker genes as well as "qualitative" information about marker genes without using a reference dataset. QR-SIDE can quantify the spatial heterogeneity of individual marker genes using a mixture Poisson regression model, and simultaneously perform spatial clustering by specifying the latent spot-separable topics. Using a Potts model, QR-SIDE integrates spatial information to promote spatial continuity for the identified spatial domains.
+## Installation
 
-# Dependency
-License: GPL-3 
+QR-SIDE contains compiled C++ code and currently relies on a companion package used by the original implementation. The recommended installation method is therefore the bundled installer below, which installs the required CRAN/Bioconductor dependencies, the correct companion `SpatialDecon` package, `SC.MEB`, and QR-SIDE itself.
 
-Encoding: UTF-8
-
-Depends: 
-    R (>= 4.2.3)
-    
-Imports:
-    BiocSingular (>= 1.14.0),
-    MASS (>= 7.3-60),
-    Rcpp (>= 1.0.12),
-    STdeconvolve (>= 1.3.1),
-    SingleCellExperiment (>= 1.20.1),
-    clue (>= 0.3-65),
-    combinat,
-    mclust (>= 6.1),
-    scater (>= 1.26.1),
-    scran (>= 1.26.2),
-    SpatialDecon
-    
-LinkingTo: 
-    Rcpp,
-    BH,
-    RcppArmadillo
-    
-SystemRequirements: C++11
-
-Suggests: 
-    testthat (>= 3.0.0)
-    
-RoxygenNote: 7.3.1
-
-# Installation Guide
-1. Download the following files to your local machine:
-    `SpatialDecon_1.0.tar.gz`,
-    `QRSIDE_1.0.0.tar.gz`
-   
-2. Install SpatialDecon
-    Open ​​R​​ or ​​RStudio​​ and run:
 ```r
-#Replace '/path/to/' with the actual directory containing SpatialDecon_1.0.tar.gz
-install.packages(
-  pkgs = "/path/to/SpatialDecon_1.0.tar.gz",
-  repos = NULL,
-  type = "source"
-)
-```
-3. Install QRSIDE
-In the same R session, run:
-```r
-#Replace '/path/to/' with the actual directory containing QRSIDE_1.0.0.tar.gz
-install.packages(
-  pkgs = "/path/to/QRSIDE_1.0.0.tar.gz",
-  repos = NULL,
-  type = "source"
-)
+source("https://raw.githubusercontent.com/SpatialOmics-pj/QR-SIDE/main/install_qrside.R")
+install_qrside()
 ```
 
-# Troubleshooting
-Install required dependencies manually. For example:
+Then load the package with:
+
 ```r
-install.packages("dplyr")  # CRAN package
-if (!require("BiocManager")) install.packages("BiocManager")
-BiocManager::install("SingleCellExperiment")  # Bioconductor package
+library(QRSIDE)
 ```
 
-# Usage
-QR-SIDE​​ takes the following inputs to perform spatial domain deconvolution:
+### Why use the installer?
 
-Key Inputs:
+QR-SIDE requires a project-specific companion package named `SpatialDecon`. This package is **not the same package as the Bioconductor package with the same name**. Installing the wrong `SpatialDecon` can lead to errors such as:
 
-1. sp_expr​​: A ​​spot-by-gene matrix​​ (spatial transcriptomics data in matrix/dataframe format).
-2. sp_pos​​: A ​​2D spatial coordinate matrix​​ (spot locations in X-Y coordinates).
-3. top_DEGs​​: A ​​list of differentially expressed genes​​ (cell-type marker genes).
-4. Num_topic​​ (int): Number of spatial domains to infer.
-5. Num_HVG​​ (int): Number of highly variable genes (HVGs) to include in training.
-6. dim_embed​​ (int): Latent dimension for hierarchical factor modeling.
+```text
+could not find function "CountDeconvolution"
+```
 
-Marker Gene Options: 
+The installer explicitly downloads the QR-SIDE companion package and verifies that `CountDeconvolution()` is available before installing QR-SIDE.
 
-1. top_marker_num​​ (int): Only use the ​​top n marker genes​​ per cell type from top_DEGs.
-2. fixed_marker_list​​ (logical):
+### Development version
 
-    FALSE → Use top top_marker_num genes per cell type.
-    TRUE → Use all genes in top_DEGs.
+To install a non-default branch, first source the installer and then specify the branch:
 
-For a quick start example, see the `tutorial/MOB.ipynb`
+```r
+source("https://raw.githubusercontent.com/SpatialOmics-pj/QR-SIDE/main/install_qrside.R")
+install_qrside(ref = "fix/installation")
+```
 
+### System requirements
+
+- R >= 4.2.3
+- A working C/C++ toolchain for source-package compilation
+- On macOS, install the Xcode Command Line Tools if compilation tools are missing
+- On Windows, install the Rtools version corresponding to your R version if needed
+
+## Main inputs
+
+`run_QRSIDE()` takes the following main inputs:
+
+1. `sp_counts`: spot-by-gene spatial transcriptomics count matrix.
+2. `pos`: spot-by-2 spatial coordinate matrix.
+3. `markerframe`: marker-gene information. Its format depends on `markerflag`.
+4. `Num_topic`: number of spatial domains/topics.
+5. `Num_HVG`: number of highly variable genes used for representation learning.
+6. `dim_embed`: latent embedding dimension.
+7. `max_marker`: maximum number of marker genes used per cell type when `markerflag = FALSE`.
+8. `markerflag`: controls the marker input format.
+
+When `markerflag = FALSE`, `markerframe` is expected to contain `gene` and `label` columns. When `markerflag = TRUE`, `markerframe` should be a list in which each element contains the marker genes for one cell type; the number of cell types is inferred automatically from `length(markerframe)`.
+
+## Quick start
+
+See `tutorial/MOB.ipynb` for an example workflow.
+
+## Troubleshooting
+
+If installation fails during compilation, first check that a compiler toolchain is available. If a Bioconductor dependency fails to install, run:
+
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::valid()
+```
+
+If you previously installed another package named `SpatialDecon` and encounter a missing `CountDeconvolution()` error, rerun the QR-SIDE installer above; it reinstalls and validates the companion package required by QR-SIDE.
+
+## License
+
+GPL-3
