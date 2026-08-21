@@ -31,11 +31,14 @@ install_qrside <- function(
   }
 
   cran_pkgs <- c(
-    "BH", "Rcpp", "RcppArmadillo", "clue", "combinat", "mclust", "purrr"
+    "BH", "Rcpp", "RcppArmadillo", "clue", "combinat", "ggplot2", "mclust",
+    "purrr", "quadprog", "reshape2", "scatterpie", "slam", "topicmodels",
+    "viridis"
   )
 
   bioc_pkgs <- c(
-    "BiocSingular", "SingleCellExperiment", "STdeconvolve", "scater", "scran"
+    "BiocParallel", "BiocSingular", "fgsea", "SingleCellExperiment", "scater",
+    "scran"
   )
 
   missing_cran <- cran_pkgs[
@@ -86,6 +89,36 @@ install_qrside <- function(
     )
   }
 
+  still_missing_bioc <- bioc_pkgs[
+    !vapply(bioc_pkgs, requireNamespace, logical(1), quietly = TRUE)
+  ]
+  if (length(still_missing_bioc)) {
+    stop(
+      "Failed to install Bioconductor dependencies: ",
+      paste(still_missing_bioc, collapse = ", ")
+    )
+  }
+
+  # STdeconvolve is no longer published in current Bioconductor releases.
+  # Install its maintained source directly after installing its dependencies.
+  if (!requireNamespace("STdeconvolve", quietly = TRUE)) {
+    stdeconvolve_url <- paste0(
+      "https://codeload.github.com/JEFworks-Lab/STdeconvolve/",
+      "tar.gz/refs/heads/master"
+    )
+    msg("Installing STdeconvolve from its maintained source archive...")
+    install.packages(
+      stdeconvolve_url,
+      repos = NULL,
+      type = "source",
+      lib = lib
+    )
+  }
+
+  if (!requireNamespace("STdeconvolve", quietly = TRUE)) {
+    stop("Failed to install STdeconvolve from its maintained source archive.")
+  }
+
   # QR-SIDE currently uses getneighborhood_fast() from SC.MEB.
   if (!requireNamespace("SC.MEB", quietly = TRUE)) {
     # Use GitHub's archive endpoint rather than install_github(). The latter
@@ -96,12 +129,67 @@ install_qrside <- function(
       "archive/refs/heads/master.tar.gz"
     )
     msg("Installing SC.MEB from its source archive...")
+    scmeb_tar <- tempfile(fileext = ".tar.gz")
+    scmeb_src <- tempfile(pattern = "SC.MEB-")
+    dir.create(scmeb_src)
+    on.exit(unlink(c(scmeb_tar, scmeb_src), recursive = TRUE), add = TRUE)
+    utils::download.file(scmeb_url, scmeb_tar, mode = "wb", quiet = !verbose)
+    utils::untar(scmeb_tar, exdir = scmeb_src)
+
+    scmeb_pkg <- list.dirs(scmeb_src, recursive = FALSE, full.names = TRUE)
+    if (length(scmeb_pkg) != 1L) {
+      stop("Could not locate the unpacked SC.MEB source package.")
+    }
+
+    # SC.MEB pins C++11, but current RcppArmadillo requires C++14. Patch the
+    # upstream build metadata in the temporary copy. Also make OpenMP optional
+    # so the package remains installable with the standard macOS toolchain.
+    for (makevars in file.path(scmeb_pkg, "src", c("Makevars", "Makevars.win"))) {
+      if (file.exists(makevars)) {
+        lines <- readLines(makevars, warn = FALSE)
+        lines <- sub("CXX_STD\\s*=\\s*CXX11", "CXX_STD = CXX14", lines)
+        writeLines(lines, makevars)
+      }
+    }
+
+    scmeb_cpp <- file.path(scmeb_pkg, "src", "bkRcpp.cpp")
+    cpp <- readLines(scmeb_cpp, warn = FALSE)
+    cpp <- sub(
+      "#include <omp.h>",
+      "#ifdef _OPENMP\n#include <omp.h>\n#endif",
+      cpp,
+      fixed = TRUE
+    )
+    cpp <- sub(
+      "    omp_set_num_threads(cores);",
+      paste(
+        "#ifdef _OPENMP",
+        "    omp_set_num_threads(cores);",
+        "#else",
+        "    (void) cores;",
+        "#endif",
+        sep = "\n"
+      ),
+      cpp,
+      fixed = TRUE
+    )
+    writeLines(cpp, scmeb_cpp)
+
     install.packages(
-      scmeb_url,
+      scmeb_pkg,
       repos = NULL,
       type = "source",
       lib = lib
     )
+  }
+
+  if (!requireNamespace("SC.MEB", quietly = TRUE) ||
+      !exists(
+        "getneighborhood_fast",
+        envir = asNamespace("SC.MEB"),
+        inherits = FALSE
+      )) {
+    stop("Failed to install a compatible SC.MEB package.")
   }
 
   # IMPORTANT: QR-SIDE uses its own companion package named SpatialDecon.

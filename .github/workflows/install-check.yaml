@@ -30,7 +30,8 @@ jobs:
             libxml2-dev \
             libfontconfig1-dev \
             libharfbuzz-dev \
-            libfribidi-dev
+            libfribidi-dev \
+            libglpk-dev
 
       - name: Install QR-SIDE
         env:
