@@ -1,0 +1,13 @@
+.DS_Store
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.o
+*.so
+*.dll
+*.dylib
+src/*.o
+src/*.so
+src/*.dll
+src/*.dylib
