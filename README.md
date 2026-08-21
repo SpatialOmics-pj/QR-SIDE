@@ -14,6 +14,24 @@ QR-SIDE estimates cell-type composition in spatial transcriptomics data without 
 - Jointly estimates spatial topics and cell-type composition.
 - Includes a one-command installer for all R, Bioconductor, and companion-package dependencies.
 
+## Coding-agent skill
+
+QR-SIDE includes an Agent Skills-compatible workflow for discovering, installing, and running reproducible spatial deconvolution experiments. Codex automatically discovers the skill when working inside this repository, and compatible coding agents can import the same skill directory.
+
+To install the skill for use in another project, ask Codex:
+
+```text
+$skill-installer Install the qrside-deconvolution skill from https://github.com/SpatialOmics-pj/QR-SIDE/tree/main/.agents/skills/qrside-deconvolution
+```
+
+Then invoke it explicitly, or describe a matching QR-SIDE deconvolution task and allow the agent to select it automatically:
+
+```text
+$qrside-deconvolution Validate my spatial counts, coordinates, and marker genes, install QR-SIDE if needed, and run a reproducible deconvolution experiment.
+```
+
+See the [QR-SIDE deconvolution skill](.agents/skills/qrside-deconvolution/SKILL.md) for its supported workflow and scientific safeguards.
+
 ## Installation
 
 QR-SIDE requires R 4.2.3 or later and compiles C++ source code. The recommended installer sets up the required CRAN and Bioconductor packages, installs compatible versions of `STdeconvolve` and `SC.MEB`, installs the QR-SIDE companion `SpatialDecon` package, and then validates the QR-SIDE installation.
