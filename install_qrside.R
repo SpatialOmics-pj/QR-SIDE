@@ -201,7 +201,12 @@ install_qrside <- function(
   )
 
   spatialdecon_tar <- tempfile(fileext = ".tar.gz")
-  on.exit(unlink(spatialdecon_tar), add = TRUE)
+  spatialdecon_src <- tempfile(pattern = "SpatialDecon-")
+  dir.create(spatialdecon_src)
+  on.exit(
+    unlink(c(spatialdecon_tar, spatialdecon_src), recursive = TRUE),
+    add = TRUE
+  )
 
   msg("Installing the QR-SIDE companion SpatialDecon package...")
   utils::download.file(
@@ -210,8 +215,33 @@ install_qrside <- function(
     mode = "wb",
     quiet = !isTRUE(verbose)
   )
+  utils::untar(spatialdecon_tar, exdir = spatialdecon_src)
+
+  spatialdecon_pkg <- list.dirs(
+    spatialdecon_src,
+    recursive = FALSE,
+    full.names = TRUE
+  )
+  if (length(spatialdecon_pkg) != 1L) {
+    stop("Could not locate the unpacked SpatialDecon source package.")
+  }
+
+  # The bundled companion package also pins C++11. Current RcppArmadillo
+  # requires C++14, so patch only the temporary installation copy.
+  for (makevars in file.path(
+    spatialdecon_pkg,
+    "src",
+    c("Makevars", "Makevars.win")
+  )) {
+    if (file.exists(makevars)) {
+      lines <- readLines(makevars, warn = FALSE)
+      lines <- sub("CXX_STD\\s*=\\s*CXX11", "CXX_STD = CXX14", lines)
+      writeLines(lines, makevars)
+    }
+  }
+
   install.packages(
-    spatialdecon_tar,
+    spatialdecon_pkg,
     repos = NULL,
     type = "source",
     lib = lib
