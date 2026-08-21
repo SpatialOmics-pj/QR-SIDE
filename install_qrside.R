@@ -15,6 +15,12 @@ install_qrside <- function(
     stop("QR-SIDE requires R >= 4.2.3. Current R version: ", getRversion())
   }
 
+  # The repository archive includes example data and can exceed R's default
+  # 60-second download timeout on slower connections.
+  old_timeout <- getOption("timeout", 60)
+  options(timeout = max(600, old_timeout))
+  on.exit(options(timeout = old_timeout), add = TRUE)
+
   dir.create(lib, recursive = TRUE, showWarnings = FALSE)
   lib <- normalizePath(lib, mustWork = TRUE)
   .libPaths(unique(c(lib, .libPaths())))
