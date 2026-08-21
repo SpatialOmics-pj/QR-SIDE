@@ -40,12 +40,12 @@ install_qrside <- function(
   # QR-SIDE 1.0.0 requires MASS >= 7.3-60. Older R installations may ship
   # an earlier recommended version and therefore need an explicit update.
   if (!requireNamespace("MASS", quietly = TRUE) ||
-      utils::packageVersion("MASS") < utils::package_version("7.3-60")) {
+      utils::packageVersion("MASS") < numeric_version("7.3-60")) {
     msg("Installing MASS >= 7.3-60...")
     try(install.packages("MASS", lib = lib), silent = TRUE)
 
     if (!requireNamespace("MASS", quietly = TRUE) ||
-        utils::packageVersion("MASS") < utils::package_version("7.3-60")) {
+        utils::packageVersion("MASS") < numeric_version("7.3-60")) {
       mass_archive <- paste0(
         "https://cran.r-project.org/src/contrib/Archive/MASS/",
         "MASS_7.3-60.tar.gz"
