@@ -22,7 +22,7 @@ install_qrside <- function(
   }
 
   cran_pkgs <- c(
-    "BH", "Rcpp", "RcppArmadillo", "clue", "combinat", "mclust", "remotes"
+    "BH", "Rcpp", "RcppArmadillo", "clue", "combinat", "mclust", "purrr"
   )
 
   bioc_pkgs <- c(
@@ -79,12 +79,19 @@ install_qrside <- function(
 
   # QR-SIDE currently uses getneighborhood_fast() from SC.MEB.
   if (!requireNamespace("SC.MEB", quietly = TRUE)) {
-    msg("Installing SC.MEB from GitHub...")
-    remotes::install_github(
-      "Shufeyangyi2015310117/SC.MEB",
-      lib = lib,
-      dependencies = TRUE,
-      upgrade = if (isTRUE(upgrade)) "always" else "never"
+    # Use GitHub's archive endpoint rather than install_github(). The latter
+    # queries the GitHub API first and can fail in shared/CI environments when
+    # the unauthenticated API rate limit is exhausted.
+    scmeb_url <- paste0(
+      "https://github.com/Shufeyangyi2015310117/SC.MEB/",
+      "archive/refs/heads/master.tar.gz"
+    )
+    msg("Installing SC.MEB from its source archive...")
+    install.packages(
+      scmeb_url,
+      repos = NULL,
+      type = "source",
+      lib = lib
     )
   }
 
@@ -128,12 +135,18 @@ install_qrside <- function(
     )
   }
 
-  msg("Installing QRSIDE from GitHub...")
-  remotes::install_github(
-    paste0(repo, "@", ref),
-    lib = lib,
-    dependencies = FALSE,
-    upgrade = if (isTRUE(upgrade)) "always" else "never"
+  qrside_url <- paste0(
+    "https://codeload.github.com/",
+    repo,
+    "/tar.gz/",
+    utils::URLencode(ref, reserved = TRUE)
+  )
+  msg("Installing QRSIDE from its source archive...")
+  install.packages(
+    qrside_url,
+    repos = NULL,
+    type = "source",
+    lib = lib
   )
 
   if (!requireNamespace("QRSIDE", quietly = TRUE)) {
