@@ -16,6 +16,15 @@ install_qrside <- function(
   }
 
   dir.create(lib, recursive = TRUE, showWarnings = FALSE)
+  lib <- normalizePath(lib, mustWork = TRUE)
+  .libPaths(unique(c(lib, .libPaths())))
+
+  repos <- getOption("repos")
+  cran_repo <- unname(repos["CRAN"])
+  if (!length(cran_repo) || is.na(cran_repo) || identical(cran_repo, "@CRAN@")) {
+    repos["CRAN"] <- "https://cloud.r-project.org"
+    options(repos = repos)
+  }
 
   msg <- function(...) {
     if (isTRUE(verbose)) message(...)
