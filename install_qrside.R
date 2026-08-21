@@ -90,10 +90,10 @@ install_qrside <- function(
 
   # IMPORTANT: QR-SIDE uses its own companion package named SpatialDecon.
   # This is different from the Bioconductor package with the same name.
+  # The companion tarball is kept on main and is independent of QRSIDE ref.
   spatialdecon_url <- paste0(
     "https://raw.githubusercontent.com/SpatialOmics-pj/QR-SIDE/",
-    ref,
-    "/SpatialDecon_1.0.tar.gz"
+    "main/SpatialDecon_1.0.tar.gz"
   )
 
   spatialdecon_tar <- tempfile(fileext = ".tar.gz")
