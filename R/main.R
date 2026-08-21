@@ -128,9 +128,10 @@ delta <- delta[rowSums(delta[, 1:ncol(delta)]) > 0, ]
 ############################################################   
 if (markerflag== TRUE){    
     
+   Num_celltype <- length(markerframe)
    markerList=unlist(markerframe) 
     
-   for (i in 1:length(markerframe)){
+   for (i in seq_along(markerframe)){
 
     if (i==1){
         t_m=matrix(0, nrow = length(markerframe[[i]]), ncol = Num_celltype)
