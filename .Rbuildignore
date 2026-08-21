@@ -1,5 +1,6 @@
 ^\.git$
 ^\.github$
+^\.agents$
 ^\.DS_Store$
 ^.*\.DS_Store$
 ^QRSIDE_.*\.tar\.gz$

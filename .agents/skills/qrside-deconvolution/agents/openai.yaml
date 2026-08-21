@@ -1,0 +1,7 @@
+interface:
+  display_name: "QR-SIDE Deconvolution"
+  short_description: "Install QR-SIDE and run spatial deconvolution"
+  default_prompt: "Use $qrside-deconvolution to validate my inputs, install QR-SIDE, and run a reproducible spatial deconvolution experiment."
+
+policy:
+  allow_implicit_invocation: true
