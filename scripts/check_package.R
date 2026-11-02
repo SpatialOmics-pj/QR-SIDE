@@ -1,0 +1,5 @@
+log <- readLines("QRSIDE.Rcheck/00check.log")
+if (!any(grepl("^\\* DONE", log))) stop("Package check did not finish.")
+status <- grep("^Status:", log, value = TRUE)
+if (length(status) && any(grepl("ERROR|WARNING", status))) stop(paste(status, collapse = "\n"))
+cat("R package check has no errors or warnings.\n")

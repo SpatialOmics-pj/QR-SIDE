@@ -1,0 +1,14 @@
+#!/bin/sh
+# R on macOS ships the Fortran runtime used by its own BLAS/LAPACK. A separate
+# Fortran compiler is unnecessary for this all-C++ package when those are present.
+cp src/Makevars.in src/Makevars || exit 1
+case "$(uname -s)" in
+  Darwin)
+    fortran="${R_HOME}/lib/libgfortran.5.dylib"
+    quadmath="${R_HOME}/lib/libquadmath.0.dylib"
+    if test -f "$fortran" && test -f "$quadmath"; then
+      printf 'CXX_STD = CXX17\noverride FLIBS = "%s" "%s"\nPKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)\n' "$fortran" "$quadmath" > src/Makevars
+    fi
+    ;;
+esac
+exit 0

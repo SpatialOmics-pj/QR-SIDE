@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.tar.gz binary
+*.RData binary
+*.RDS binary
+*.rds binary
+*.gz binary

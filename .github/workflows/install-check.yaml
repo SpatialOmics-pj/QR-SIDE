@@ -1,6 +1,8 @@
 name: QR-SIDE installation check
 
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -9,36 +11,66 @@ permissions:
 
 jobs:
   install:
-    runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            r: '4.4'
+          - os: macos-latest
+            r: 'release'
+          - os: windows-latest
+            r: 'release'
+    runs-on: ${{ matrix.os }}
+    env:
+      R_KEEP_PKG_SOURCE: yes
+      _R_CHECK_FORCE_SUGGESTS_: false
+      QRSIDE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+      QRSIDE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v5
-
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
+      - uses: actions/checkout@v5
+      - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: '4.4'
+          r-version: ${{ matrix.r }}
           use-public-rspm: true
-
-      - name: Install system libraries
+      - name: Install Linux system libraries
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            libcurl4-openssl-dev \
-            libssl-dev \
-            libxml2-dev \
-            libfontconfig1-dev \
-            libharfbuzz-dev \
-            libfribidi-dev \
-            libglpk-dev
-
-      - name: Install QR-SIDE
-        env:
-          QRSIDE_REF: ${{ github.head_ref || github.ref_name }}
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libglpk-dev libgsl-dev
+      - name: Install from the downloadable source package
+        shell: Rscript {0}
         run: |
-          Rscript -e 'source("install_qrside.R"); install_qrside(ref = Sys.getenv("QRSIDE_REF"))'
-
-      - name: Smoke test package loading
+          options(Ncpus = 2L)
+          source("scripts/check_archive.R")
+          source("install_qrside.R")
+          install_qrside(repo = Sys.getenv("QRSIDE_REPO"), ref = Sys.getenv("QRSIDE_REF"))
+      - name: Verify installation failure reporting
+        shell: Rscript {0}
         run: |
-          Rscript -e 'library(QRSIDE); stopifnot(exists("run_QRSIDE", envir = asNamespace("QRSIDE"), inherits = FALSE)); stopifnot(exists("CountDeconvolution", envir = asNamespace("SpatialDecon"), inherits = FALSE)); cat("QR-SIDE installation smoke test passed\n")'
+          source("scripts/check_installer.R")
+      - name: Run complete model and regression tests
+        shell: Rscript {0}
+        run: |
+          source("tests/runtime.R")
+      - name: Run the download-and-use example
+        shell: Rscript {0}
+        run: |
+          source("inst/examples/quickstart.R")
+      - name: Run the real MOB dataset
+        if: runner.os == 'Linux'
+        shell: Rscript {0}
+        run: |
+          source(system.file("examples", "MOB.R", package = "QRSIDE"))
+          run_mob_example()
+      - name: Check source package
+        shell: bash
+        run: |
+          R CMD build . --no-build-vignettes
+          R CMD check QRSIDE_1.0.1.tar.gz --no-manual --no-build-vignettes
+          Rscript scripts/check_package.R
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: package-check-${{ runner.os }}
+          path: QRSIDE.Rcheck

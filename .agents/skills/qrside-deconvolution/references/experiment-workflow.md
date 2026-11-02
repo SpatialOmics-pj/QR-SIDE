@@ -133,7 +133,7 @@ Report:
 
 ## Troubleshooting
 
-- Missing `CountDeconvolution`: the wrong package named `SpatialDecon` is installed. Rerun the official QR-SIDE installer and recheck the namespace.
+- Missing `CountDeconvolution`: an older QR-SIDE version is installed. Restart R and update with the official installer; version 1.0.1 includes the core internally.
 - Compilation failure: confirm R >= 4.2.3 and the platform toolchain described in the QR-SIDE README. Preserve the first compiler error, not only the final nonzero exit message.
 - Empty marker error: compare marker identifiers with `colnames(sp_counts)` and report overlap per cell type. Do not silently change gene identifier systems.
 - Spot mismatch: align `pos` to counts by row names and report unmatched identifiers; never align by row position alone.

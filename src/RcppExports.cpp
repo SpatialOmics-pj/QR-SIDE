@@ -11,6 +11,114 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// qrside_CountDeconvolution
+Rcpp::List qrside_CountDeconvolution(arma::mat& X_count, arma::mat Z, arma::mat W, int K, int T, arma::mat beta, arma::mat mu, arma::mat pi, arma::mat pi0, arma::vec Lambda, arma::vec alpha, arma::mat epsilon2, int max_iter, double eps, bool verbose, bool fixed_loglambda_mu, bool fixed_loglambda_s2, bool fixed_z_mu, bool fixed_z_s2, bool fixed_m, bool fixed_b, bool fixed_pi, bool fixed_W, bool fixed_alpha, bool fixed_Lambda, bool fixed_pi0, bool fixed_epsilon2, bool fixed_mu, bool fixed_sigma2, bool fixed_beta2, bool alpha_spot_specific, double cutoff);
+RcppExport SEXP _QRSIDE_qrside_CountDeconvolution(SEXP X_countSEXP, SEXP ZSEXP, SEXP WSEXP, SEXP KSEXP, SEXP TSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP piSEXP, SEXP pi0SEXP, SEXP LambdaSEXP, SEXP alphaSEXP, SEXP epsilon2SEXP, SEXP max_iterSEXP, SEXP epsSEXP, SEXP verboseSEXP, SEXP fixed_loglambda_muSEXP, SEXP fixed_loglambda_s2SEXP, SEXP fixed_z_muSEXP, SEXP fixed_z_s2SEXP, SEXP fixed_mSEXP, SEXP fixed_bSEXP, SEXP fixed_piSEXP, SEXP fixed_WSEXP, SEXP fixed_alphaSEXP, SEXP fixed_LambdaSEXP, SEXP fixed_pi0SEXP, SEXP fixed_epsilon2SEXP, SEXP fixed_muSEXP, SEXP fixed_sigma2SEXP, SEXP fixed_beta2SEXP, SEXP alpha_spot_specificSEXP, SEXP cutoffSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type X_count(X_countSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type W(WSEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< int >::type T(TSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type pi(piSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type pi0(pi0SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type Lambda(LambdaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type epsilon2(epsilon2SEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_loglambda_mu(fixed_loglambda_muSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_loglambda_s2(fixed_loglambda_s2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_z_mu(fixed_z_muSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_z_s2(fixed_z_s2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_m(fixed_mSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_b(fixed_bSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_pi(fixed_piSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_W(fixed_WSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_alpha(fixed_alphaSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_Lambda(fixed_LambdaSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_pi0(fixed_pi0SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_epsilon2(fixed_epsilon2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_mu(fixed_muSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_sigma2(fixed_sigma2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_beta2(fixed_beta2SEXP);
+    Rcpp::traits::input_parameter< bool >::type alpha_spot_specific(alpha_spot_specificSEXP);
+    Rcpp::traits::input_parameter< double >::type cutoff(cutoffSEXP);
+    rcpp_result_gen = Rcpp::wrap(qrside_CountDeconvolution(X_count, Z, W, K, T, beta, mu, pi, pi0, Lambda, alpha, epsilon2, max_iter, eps, verbose, fixed_loglambda_mu, fixed_loglambda_s2, fixed_z_mu, fixed_z_s2, fixed_m, fixed_b, fixed_pi, fixed_W, fixed_alpha, fixed_Lambda, fixed_pi0, fixed_epsilon2, fixed_mu, fixed_sigma2, fixed_beta2, alpha_spot_specific, cutoff));
+    return rcpp_result_gen;
+END_RCPP
+}
+// qrside_JointSTCountDecon
+Rcpp::List qrside_JointSTCountDecon(arma::mat& X_m_count, arma::mat& rho, arma::mat& X_count, arma::ivec& y, arma::sp_mat& Adj, arma::mat Z, arma::mat W, int K, int T, arma::mat beta, arma::mat mu, arma::mat pi, arma::vec pi0, arma::vec Lambda, arma::vec alpha, arma::mat epsilon2, arma::vec beta0_y, arma::vec beta_y_grid, arma::vec Lambda_m, arma::mat delta, arma::mat m, double beta_y, int max_iter, int maxIter_ICM, double eps, bool verbose, bool fixed_loglambda_mu, bool fixed_loglambda_s2, bool fixed_z_mu, bool fixed_z_s2, bool fixed_m, bool fixed_b, bool fixed_pi, bool fixed_W, bool fixed_alpha, bool fixed_Lambda, bool fixed_pi0, bool fixed_epsilon2, bool fixed_mu, bool fixed_sigma2, bool fixed_beta2, bool fixed_beta_y, bool alpha_spot_specific, double cutoff);
+RcppExport SEXP _QRSIDE_qrside_JointSTCountDecon(SEXP X_m_countSEXP, SEXP rhoSEXP, SEXP X_countSEXP, SEXP ySEXP, SEXP AdjSEXP, SEXP ZSEXP, SEXP WSEXP, SEXP KSEXP, SEXP TSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP piSEXP, SEXP pi0SEXP, SEXP LambdaSEXP, SEXP alphaSEXP, SEXP epsilon2SEXP, SEXP beta0_ySEXP, SEXP beta_y_gridSEXP, SEXP Lambda_mSEXP, SEXP deltaSEXP, SEXP mSEXP, SEXP beta_ySEXP, SEXP max_iterSEXP, SEXP maxIter_ICMSEXP, SEXP epsSEXP, SEXP verboseSEXP, SEXP fixed_loglambda_muSEXP, SEXP fixed_loglambda_s2SEXP, SEXP fixed_z_muSEXP, SEXP fixed_z_s2SEXP, SEXP fixed_mSEXP, SEXP fixed_bSEXP, SEXP fixed_piSEXP, SEXP fixed_WSEXP, SEXP fixed_alphaSEXP, SEXP fixed_LambdaSEXP, SEXP fixed_pi0SEXP, SEXP fixed_epsilon2SEXP, SEXP fixed_muSEXP, SEXP fixed_sigma2SEXP, SEXP fixed_beta2SEXP, SEXP fixed_beta_ySEXP, SEXP alpha_spot_specificSEXP, SEXP cutoffSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type X_m_count(X_m_countSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type X_count(X_countSEXP);
+    Rcpp::traits::input_parameter< arma::ivec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::sp_mat& >::type Adj(AdjSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type Z(ZSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type W(WSEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< int >::type T(TSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type pi(piSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type pi0(pi0SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type Lambda(LambdaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type epsilon2(epsilon2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type beta0_y(beta0_ySEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type beta_y_grid(beta_y_gridSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type Lambda_m(Lambda_mSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type m(mSEXP);
+    Rcpp::traits::input_parameter< double >::type beta_y(beta_ySEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type maxIter_ICM(maxIter_ICMSEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_loglambda_mu(fixed_loglambda_muSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_loglambda_s2(fixed_loglambda_s2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_z_mu(fixed_z_muSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_z_s2(fixed_z_s2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_m(fixed_mSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_b(fixed_bSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_pi(fixed_piSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_W(fixed_WSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_alpha(fixed_alphaSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_Lambda(fixed_LambdaSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_pi0(fixed_pi0SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_epsilon2(fixed_epsilon2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_mu(fixed_muSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_sigma2(fixed_sigma2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_beta2(fixed_beta2SEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_beta_y(fixed_beta_ySEXP);
+    Rcpp::traits::input_parameter< bool >::type alpha_spot_specific(alpha_spot_specificSEXP);
+    Rcpp::traits::input_parameter< double >::type cutoff(cutoffSEXP);
+    rcpp_result_gen = Rcpp::wrap(qrside_JointSTCountDecon(X_m_count, rho, X_count, y, Adj, Z, W, K, T, beta, mu, pi, pi0, Lambda, alpha, epsilon2, beta0_y, beta_y_grid, Lambda_m, delta, m, beta_y, max_iter, maxIter_ICM, eps, verbose, fixed_loglambda_mu, fixed_loglambda_s2, fixed_z_mu, fixed_z_s2, fixed_m, fixed_b, fixed_pi, fixed_W, fixed_alpha, fixed_Lambda, fixed_pi0, fixed_epsilon2, fixed_mu, fixed_sigma2, fixed_beta2, fixed_beta_y, alpha_spot_specific, cutoff));
+    return rcpp_result_gen;
+END_RCPP
+}
+// spatial_neighbors
+arma::sp_mat spatial_neighbors(const arma::mat& positions, double cutoff);
+RcppExport SEXP _QRSIDE_spatial_neighbors(SEXP positionsSEXP, SEXP cutoffSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type positions(positionsSEXP);
+    Rcpp::traits::input_parameter< double >::type cutoff(cutoffSEXP);
+    rcpp_result_gen = Rcpp::wrap(spatial_neighbors(positions, cutoff));
+    return rcpp_result_gen;
+END_RCPP
+}
 // sum_nu_lognu0
 double sum_nu_lognu0(arma::cube& nu, arma::vec& nu0, arma::mat& rho);
 RcppExport SEXP _QRSIDE_sum_nu_lognu0(SEXP nuSEXP, SEXP nu0SEXP, SEXP rhoSEXP) {
@@ -277,6 +385,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_QRSIDE_qrside_CountDeconvolution", (DL_FUNC) &_QRSIDE_qrside_CountDeconvolution, 32},
+    {"_QRSIDE_qrside_JointSTCountDecon", (DL_FUNC) &_QRSIDE_qrside_JointSTCountDecon, 44},
+    {"_QRSIDE_spatial_neighbors", (DL_FUNC) &_QRSIDE_spatial_neighbors, 2},
     {"_QRSIDE_sum_nu_lognu0", (DL_FUNC) &_QRSIDE_sum_nu_lognu0, 3},
     {"_QRSIDE_cal_nu_entropy", (DL_FUNC) &_QRSIDE_cal_nu_entropy, 2},
     {"_QRSIDE_ud_loglambda_mu", (DL_FUNC) &_QRSIDE_ud_loglambda_mu, 4},

@@ -11,3 +11,6 @@ src/*.o
 src/*.so
 src/*.dll
 src/*.dylib
+
+QRSIDE.Rcheck/
+src/Makevars

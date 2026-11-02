@@ -12,7 +12,10 @@ run_QRSIDE(
   Num_HVG,
   dim_embed,
   max_marker,
-  markerflag
+  markerflag,
+  max_iter = 50L,
+  seed = 999L,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -31,6 +34,12 @@ run_QRSIDE(
 \item{max_marker}{最大标记基因数}
 
 \item{markerflag}{标记基因标志}
+
+\item{max_iter}{Maximum iterations per model-fitting stage; at least 2.}
+
+\item{seed}{Random seed for reproducible initialization.}
+
+\item{verbose}{Print model diagnostics.}
 }
 \value{
 解卷积结果
