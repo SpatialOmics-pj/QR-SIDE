@@ -25,7 +25,7 @@ jobs:
     env:
       R_KEEP_PKG_SOURCE: yes
       _R_CHECK_FORCE_SUGGESTS_: false
-      QRSIDE_REF: ${{ github.head_ref || github.ref_name }}
+      QRSIDE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
       QRSIDE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
     steps:
       - uses: actions/checkout@v5
@@ -44,6 +44,10 @@ jobs:
           source("scripts/check_archive.R")
           source("install_qrside.R")
           install_qrside(repo = Sys.getenv("QRSIDE_REPO"), ref = Sys.getenv("QRSIDE_REF"))
+      - name: Verify installation failure reporting
+        shell: Rscript {0}
+        run: |
+          source("scripts/check_installer.R")
       - name: Run complete model and regression tests
         shell: Rscript {0}
         run: |

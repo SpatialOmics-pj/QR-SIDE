@@ -7,7 +7,7 @@ utils::untar(archive, exdir = tmp)
 files <- list.files(c("R", "src", "man", "tests", "inst/examples"),
                     recursive = TRUE, full.names = TRUE)
 files <- files[!grepl("\\.(o|so|dll|dylib)$", files)]
-files <- c("NAMESPACE", files)
+files <- c("NAMESPACE", "configure", "cleanup", files)
 for (file in files) {
   packaged <- file.path(tmp, "QRSIDE", file)
   if (!file.exists(packaged) || tools::md5sum(file) != tools::md5sum(packaged))

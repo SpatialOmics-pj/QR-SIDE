@@ -34,7 +34,7 @@ See the [QR-SIDE deconvolution skill](.agents/skills/qrside-deconvolution/SKILL.
 
 ## Installation
 
-Use R >= 4.2.3 in a fresh R/RStudio session. Install the R build tools for your system first: Xcode Command Line Tools and the Fortran toolchain matching R on macOS, Rtools on Windows, or R development tools on Linux.
+Use R >= 4.2.3 in a fresh R/RStudio session. Install the R build tools for your system first: Xcode Command Line Tools on macOS (QR-SIDE uses R's bundled Fortran runtime when available), Rtools on Windows, or R development tools on Linux.
 
 ```r
 source("https://raw.githubusercontent.com/SpatialOmics-pj/QR-SIDE/main/install_qrside.R")

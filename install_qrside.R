@@ -27,7 +27,15 @@ install_qrside <- function(repo = "SpatialOmics-pj/QR-SIDE", ref = "main",
     options(repos = repos)
   }
   msg <- function(...) if (isTRUE(verbose)) message(...)
-  available <- function(p) requireNamespace(p, quietly = TRUE)
+  minimum_versions <- c(Rcpp = "1.0.12", clue = "0.3-65", mclust = "6.1",
+                        SingleCellExperiment = "1.20.1", scran = "1.26.2",
+                        STdeconvolve = "1.3.1")
+  available <- function(p) {
+    version <- tryCatch(utils::packageVersion(p), error = function(e) NULL)
+    if (is.null(version)) return(FALSE)
+    if (p %in% names(minimum_versions) && version < minimum_versions[[p]]) return(FALSE)
+    requireNamespace(p, quietly = TRUE)
+  }
   cran <- c("BH", "Rcpp", "RcppArmadillo", "clue", "ggplot2",
             "mclust", "quadprog", "reshape2", "scatterpie", "slam",
             "topicmodels", "viridis")
@@ -72,7 +80,17 @@ install_qrside <- function(repo = "SpatialOmics-pj/QR-SIDE", ref = "main",
   }
   if (!file.exists(package_file)) stop("Source package not found: ", package_file)
   msg("Installing QRSIDE...")
-  install.packages(package_file, repos = NULL, type = "source", lib = lib)
+  # install.packages() only warns on compiler failure and may restore an older
+  # installed package. Check the actual installer exit status before reporting success.
+  old_libs <- Sys.getenv("R_LIBS", unset = NA_character_)
+  Sys.setenv(R_LIBS = paste(.libPaths(), collapse = .Platform$path.sep))
+  on.exit(if (is.na(old_libs)) Sys.unsetenv("R_LIBS") else Sys.setenv(R_LIBS = old_libs), add = TRUE)
+  status <- system2(file.path(R.home("bin"), "R"),
+                    c("CMD", "INSTALL", shQuote(paste0("--library=", lib)),
+                      shQuote(normalizePath(package_file))))
+  if (status != 0L)
+    stop("QRSIDE installation failed (exit status ", status,
+         "). Review the compilation output; an older restored package is not a successful update.")
   if (!requireNamespace("QRSIDE", quietly = TRUE) || utils::packageVersion("QRSIDE") < "1.0.1")
     stop("QRSIDE installation did not complete. Review the compilation output above.")
   ns <- asNamespace("QRSIDE")

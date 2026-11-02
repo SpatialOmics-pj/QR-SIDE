@@ -12,3 +12,4 @@
 ^scripts$
 ^vendor$
 ^QRSIDE\.Rcheck$
+^\.gitattributes$

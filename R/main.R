@@ -3,7 +3,7 @@
 #' @param pos Two numeric coordinate columns with the same spot identifiers.
 #' @param markerframe A gene/label data frame, or a named list of marker vectors.
 #' @param Num_topic Number of spatial topics.
-#' @param Num_HVG Number of highly variable non-marker candidates to select.
+#' @param Num_HVG Number of highly variable genes selected before retaining markers.
 #' @param dim_embed Latent embedding dimension.
 #' @param max_marker Maximum markers per cell type for table input.
 #' @param markerflag Use a marker list (TRUE) or table (FALSE).
