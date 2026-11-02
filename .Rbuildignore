@@ -9,3 +9,6 @@
 ^scdata$
 ^spdata$
 ^tutorial$
+^scripts$
+^vendor$
+^QRSIDE\.Rcheck$

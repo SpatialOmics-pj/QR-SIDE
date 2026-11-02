@@ -20,7 +20,7 @@ Use QR-SIDE to turn spot-by-gene spatial counts, spot coordinates, and qualitati
 3. Verify the installation before processing data:
 
    ```sh
-   Rscript -e 'library(QRSIDE); stopifnot(exists("run_QRSIDE", envir = asNamespace("QRSIDE"), inherits = FALSE)); stopifnot(exists("CountDeconvolution", envir = asNamespace("SpatialDecon"), inherits = FALSE))'
+   Rscript -e 'library(QRSIDE); stopifnot(exists("run_QRSIDE", envir = asNamespace("QRSIDE"), inherits = FALSE)); stopifnot(is.function(get(".count_deconvolution", asNamespace("QRSIDE"))))'
    ```
 
 4. Validate inputs before starting an expensive fit:
@@ -42,7 +42,7 @@ Use QR-SIDE to turn spot-by-gene spatial counts, spot coordinates, and qualitati
 ## Scientific boundaries
 
 - `Num_topic` is the number of latent spatial topics/domains, not the number of cell types.
-- Do not substitute the Bioconductor package named `SpatialDecon`; QR-SIDE requires its project-specific companion package with `CountDeconvolution()`.
+- Use QR-SIDE >= 1.0.1, which includes its core implementation. Do not install a separate package named `SpatialDecon` or `SC.MEB` for this version.
 - Do not claim cell-type labels or biological conclusions that are not supported by the marker definitions and model outputs.
 - Do not transform `pi` and `beta` into a new spot-by-cell-type estimate unless the requested analysis defines and documents that transformation.
 

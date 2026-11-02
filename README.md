@@ -12,7 +12,7 @@ QR-SIDE estimates cell-type composition in spatial transcriptomics data without 
 - Supports marker annotations as either a two-column table or a list grouped by cell type.
 - Uses both marker and non-marker genes during model fitting.
 - Jointly estimates spatial topics and cell-type composition.
-- Includes a one-command installer for all R, Bioconductor, and companion-package dependencies.
+- Includes a one-command installer for all R, Bioconductor, and model dependencies.
 
 ## Coding-agent skill
 
@@ -34,61 +34,72 @@ See the [QR-SIDE deconvolution skill](.agents/skills/qrside-deconvolution/SKILL.
 
 ## Installation
 
-QR-SIDE requires R 4.2.3 or later and compiles C++ source code. The recommended installer sets up the required CRAN and Bioconductor packages, installs compatible versions of `STdeconvolve` and `SC.MEB`, installs the QR-SIDE companion `SpatialDecon` package, and then validates the QR-SIDE installation.
-
-Run the following commands in R or RStudio:
+Use R >= 4.2.3 in a fresh R/RStudio session. Install the R build tools for your system first: Xcode Command Line Tools and the Fortran toolchain matching R on macOS, Rtools on Windows, or R development tools on Linux.
 
 ```r
 source("https://raw.githubusercontent.com/SpatialOmics-pj/QR-SIDE/main/install_qrside.R")
 install_qrside()
-```
-
-Load the installed package:
-
-```r
 library(QRSIDE)
 ```
 
-To install into a specific R library and allow Bioconductor dependency updates, use:
+The installer sets up CRAN/Bioconductor dependencies and downloads the small, versioned R source package. It does not download the large example-data repository. Windows/macOS dependencies use binaries when available. To choose a writable library:
 
 ```r
-install_qrside(lib = "/path/to/R/library", upgrade = TRUE)
+install_qrside(lib = "/path/to/R/library")
 ```
 
-### Why the bundled installer is required
+QR-SIDE 1.0.1 includes its core deconvolution and spatial-neighbor implementations. It no longer needs the separate `SpatialDecon` or `SC.MEB` packages; the unrelated Bioconductor package named `SpatialDecon` cannot interfere with the installation.
 
-QR-SIDE uses a project-specific companion package named `SpatialDecon`. It is **not** the Bioconductor package with the same name. Installing the other package causes errors such as:
+### Download the package directly
 
-```text
-could not find function "CountDeconvolution"
+Download [QRSIDE_1.0.1.tar.gz](https://github.com/SpatialOmics-pj/QR-SIDE/raw/refs/heads/main/QRSIDE_1.0.1.tar.gz). If dependencies are already installed:
+
+```r
+install.packages("/path/to/QRSIDE_1.0.1.tar.gz", repos = NULL, type = "source")
 ```
 
-The bundled installer downloads the correct companion package and verifies that both `SpatialDecon::CountDeconvolution()` and `QRSIDE::run_QRSIDE()` are available.
-
-### Install another branch
-
-Once the installer is available on `main`, a development branch can be installed by passing its name:
+To set up dependencies and then install the downloaded file:
 
 ```r
 source("https://raw.githubusercontent.com/SpatialOmics-pj/QR-SIDE/main/install_qrside.R")
-install_qrside(ref = "branch-name")
+install_qrside(package_file = "/path/to/QRSIDE_1.0.1.tar.gz")
 ```
 
-## System requirements
+### Verify a complete run
 
-- R >= 4.2.3
-- A C++14-capable build toolchain
-- macOS: Xcode Command Line Tools and the compilers required by the installed R version
-- Windows: the Rtools release corresponding to the installed R version
-- Linux: standard R development tools and system libraries required by compiled CRAN/Bioconductor packages
+This synthetic example runs the complete model and checks finite outputs. It is an installation check, not a biological analysis.
 
-For Ubuntu, the system libraries used by the clean-install test are:
+```r
+library(QRSIDE)
+source(system.file("examples", "quickstart.R", package = "QRSIDE"))
+```
+
+The real-data MOB example downloads the spatial count file (about 3 MB), uses example markers derived from the bundled reference, and runs all spatial spots with the original tutorial's 7 topics, 1,000 HVGs, and 20 embedding dimensions:
+
+```r
+source(system.file("examples", "MOB.R", package = "QRSIDE"))
+fit <- run_mob_example()
+saveRDS(fit, "MOB_fit.rds")
+```
+
+Example markers support reproducibility testing and require independent review before biological interpretation. Their derivation is in `scripts/prepare_mob_markers.R`.
+
+### Linux system libraries
+
+For Ubuntu:
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y \
   libcurl4-openssl-dev libssl-dev libxml2-dev \
-  libfontconfig1-dev libharfbuzz-dev libfribidi-dev libglpk-dev
+  libfontconfig1-dev libharfbuzz-dev libfribidi-dev libglpk-dev libgsl-dev
+```
+
+### Install a development branch
+
+```r
+source("https://raw.githubusercontent.com/SpatialOmics-pj/QR-SIDE/main/install_qrside.R")
+install_qrside(ref = "branch-name")
 ```
 
 ## Input data
@@ -110,8 +121,8 @@ run_QRSIDE(
 
 | Argument | Description |
 | --- | --- |
-| `sp_counts` | Spatial count matrix with spots in rows and genes in columns. |
-| `pos` | Spatial coordinates with the same spots in rows and two coordinate columns. Row names must match `sp_counts`. |
+| `sp_counts` | Finite nonnegative integer raw counts with unique spot row names and gene column names. |
+| `pos` | Spatial coordinates with the same spots in rows and two coordinate columns. Row names must match `sp_counts`; coordinates are aligned by those identifiers. |
 | `markerframe` | Marker-gene annotations in one of the two formats shown below. |
 | `Num_topic` | Number of latent spatial topics/domains. |
 | `Num_HVG` | Number of highly variable genes used for representation learning. |
@@ -132,7 +143,7 @@ markerframe <- data.frame(
 
 ### Marker list
 
-Set `markerflag = TRUE` and provide one marker vector per cell type. QR-SIDE infers the number of cell types from the length of the list.
+Set `markerflag = TRUE` and provide one marker vector per cell type. QR-SIDE infers the number of cell types from the length of the list. At least two cell types are required.
 
 ```r
 markerframe <- list(
@@ -141,7 +152,7 @@ markerframe <- list(
 )
 ```
 
-Marker genes must use the same identifiers as the column names of `sp_counts`.
+Marker genes must use the same identifiers as `colnames(sp_counts)`. Each cell type needs at least one expressed marker not already assigned to an earlier cell type. Marker genes remain in the model even when not selected as HVGs. Choose `dim_embed` no larger than the number of variable non-marker genes or the number of spots minus one. Each retained spot needs positive marker and non-marker counts.
 
 ## Example workflow
 
@@ -174,15 +185,18 @@ fit <- run_QRSIDE(
 | `pi` | Estimated topic weights for the spatial spots. |
 | `beta` | Estimated cell-type composition associated with the topics. |
 | `order` | Cell-type column matching used by the fitted model. |
-| `pos` | Spatial coordinates used in the analysis. |
+| `pos` | Spatial coordinates used in the analysis, in the input spot order. |
+| `cell_types` | Cell-type names in the fitted `beta` column order. |
 
-For a complete analysis example, see [tutorial/MOB.ipynb](tutorial/MOB.ipynb).
+Optional arguments `max_iter = 50L`, `seed = 999L`, and `verbose = FALSE` control iteration limits, reproducible initialization, and diagnostics. The existing eight positional arguments remain supported.
+
+For a runnable MOB example, use `run_mob_example()` above. [tutorial/MOB.ipynb](tutorial/MOB.ipynb) is the extended Seurat/CARD workflow and requires those optional packages.
 
 ## Troubleshooting
 
 ### A package fails while compiling
 
-Confirm that the build tools listed under [System requirements](#system-requirements) are installed, restart R, and rerun `install_qrside()`.
+Confirm that the build tools listed under [Installation](#installation) are installed, restart R, and rerun `install_qrside()`.
 
 ### A Bioconductor dependency is unavailable
 
@@ -197,7 +211,7 @@ BiocManager::valid()
 
 ### `CountDeconvolution()` cannot be found
 
-Another package named `SpatialDecon` is installed. Rerun the QR-SIDE installer; it replaces and validates the companion package required by QR-SIDE.
+This indicates an older QR-SIDE installation. Restart R and rerun the installer to update to 1.0.1 or later. The current package contains this implementation internally.
 
 ### Installation still fails
 

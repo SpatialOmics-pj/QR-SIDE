@@ -38,7 +38,7 @@ double sum_nu_lognu0(arma::cube& nu, arma::vec& nu0, arma::mat& rho) {
     {
       for (int k = 0; k < K; k++)
       {
-        if((rho(j, k) != 0) & (nu0(k) != 0)) tmp += nu(j, k, i) * log(nu0(k));
+        if((rho(j, k) != 0) && (nu0(k) != 0)) tmp += nu(j, k, i) * log(nu0(k));
       }
     }
   }
@@ -95,10 +95,8 @@ double ud_loglambda_mu(double Xmij, double Ni, double Lambdaj, double pibmu) {
   
   const int double_bits = std::numeric_limits<double>::digits;
   std::pair<double, double> out_x = brent_find_minima(funcdouble(Xmij, Ni, Lambdaj, pibmu), -5.0, 15.0, double_bits);
-  //std::streamsize precision_1 = std::cout.precision(std::numeric_limits<double>::digits10);
   // Show all double precision decimal digits and trailing zeros.
   if (false){
-    std::cout << "x at minimum = " << out_x.first << ", f(" << out_x.first << ") = " << out_x.second << std::endl;
   }
   double loglambda_mu = out_x.first;
   return loglambda_mu;
@@ -181,7 +179,6 @@ arma::mat  ud_pi(arma::vec& invLambda, arma::mat& loglambda_mu, arma::cube& bmu,
         tmp2 += invLambda(j) * b2mu(t, j, i);
       }
       phi(i, t) = -0.5*tmp1 - 0.5*tmp2;   
-      //cout << phi(i, t) << endl;
     }
     //mat log_relative_pi = zeros<mat>(T, n);
     for (int t = 1; t < T; t++)
@@ -244,7 +241,6 @@ void ud_nu(arma::mat& pi, arma::vec& invLambda, arma::mat& loglambda_mu, arma::c
             {
               if(k_ != k) tmp3 += beta(t, k_) * (m(j, k_) + rho(j, k_)*nu(j, k_, i)*delta(j, k_)); 
             }
-            //if((i+j+k) == 0) cout << tmp3 << endl;
             tmp1 += pi(i, t) * invLambda(j) * (loglambda_mu(i, j) - tmp3 - beta(t, k) * m(j, k)) * beta(t, k) * rho(j, k) * delta(j, k);
             tmp2 += pi(i, t) * invLambda(j) * beta2(t, k) * rho(j, k) * delta2(j, k);
           }
@@ -351,14 +347,7 @@ arma::mat ud_beta(arma::mat& pi, arma::mat& loglambda_mu, arma::vec& invLambda, 
         if (k_ != k) Dmat(k_, k) = Dmat(k, k_);  
       }
     }
-    if(t == 0 & FALSE) {
-      cout << "pi_11 = " << pi(0,0) << endl;
-      cout << "loglambda_mu_11 = " << loglambda_mu(0,0) << endl;
-      cout << "invLambda_1 = " << invLambda(0) << endl;
-      cout << "m_11 = " << m(0,0) << endl;
-      cout << "nu_111 = " << nu(0,0,0) << endl;
-      cout << "delta_11 = " << delta(0,0) << endl;
-      cout << "mu_m_111 = " << mu_m(0,0,0) << endl;
+    if(false) {
     }
     for (int k = 0; k < K; k++)
     {
@@ -430,10 +419,6 @@ double calELBO(arma::vec& N, arma::mat& X_m, arma::mat& rho, int T, arma::mat& l
       }
     }
     
-    std::cout << std::setprecision(20);
-    if (false) cout << term << endl;
-    if (false)cout << possion_term << endl;
-    if (false) cout << possion_term2 << endl;
      
     double ELBO = accu(term) + possion_term + possion_term2;
     return(ELBO);
@@ -512,7 +497,6 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
     }   
 
     if(verbose) {
-      //cout << "checking point 0" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);  
       //Rprintf("iter = %d, loglik= %4f, dloglik=%4f \n", iter, ELBO(iter), (ELBO(iter)  - ELBO(iter-1)));
       ELBO(iter) = part;
@@ -521,7 +505,6 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
     // pi
     pi = ud_pi(invLambda, loglambda_mu, bmu, b2mu, pi0);   
     if(verbose) {
-      //cout << "checking point 1" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);
       TERM(iter, 1) = part  - ELBO(iter);
       ELBO(iter) = part;
@@ -532,7 +515,6 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
     mu_m = cal_mu_m(m, rho, nu, delta);
     nu2 = nu % nu;
     if(verbose) {
-      //cout << "checking point 2" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);
       TERM(iter, 2) = part  - ELBO(iter);
       ELBO(iter) = part;
@@ -543,7 +525,6 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
     ud_m(pi, loglambda_mu, nu, beta, beta2, m, rho, delta);
     mu_m = cal_mu_m(m, rho, nu, delta);
     if(verbose) {
-      //cout << "checking point 3" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);
       TERM(iter, 3) = part  - ELBO(iter);
       ELBO(iter) = part;
@@ -551,11 +532,9 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
 
     // delta
     ud_delta(pi, loglambda_mu, nu, beta, beta2, m, rho, delta);
-    //cout << delta << endl;
     delta2 = delta % delta;
     mu_m = cal_mu_m(m, rho, nu, delta);
     if(verbose) {
-      //cout << "checking point 4" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);
       TERM(iter, 4) = part  - ELBO(iter);
       ELBO(iter) = part;
@@ -565,7 +544,6 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
     beta = ud_beta(pi, loglambda_mu, invLambda, m, rho, nu, delta, mu_m);
     beta2 = beta % beta; 
     if(verbose) {
-      //cout << "checking point 5" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);
       TERM(iter, 5) = part  - ELBO(iter);
       ELBO(iter) = part;
@@ -575,9 +553,7 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
     for (int t = 0; t<T; t++){
       pi0(t) = sum(pi.col(t))/n;
     }
-    //cout << pi0 << endl;
     if(verbose) {
-      //cout << "checking point 6" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);
       TERM(iter, 6) = part  - ELBO(iter);
       ELBO(iter) = part;
@@ -585,9 +561,7 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
 
     // nu0
     nu0 = ud_nu0(nu, rho); 
-    //cout << nu0 << endl;
     if(verbose) {
-      //cout << "checking point 7" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);
       TERM(iter, 7) = part  - ELBO(iter);
       ELBO(iter) = part;
@@ -599,7 +573,6 @@ List DeconvMarker(arma::mat& X_m, arma::mat& rho, int T, arma::mat beta,
     Lambda = ud_Lambda(loglambda_mu, loglambda_s2, pi, bmu, b2mu);
     invLambda = 1.0/Lambda;
     if(verbose) {
-      //cout << "checking point 8" << endl;
       double part = calELBO(N, X_m, rho, T, loglambda_mu, loglambda_s2, Lambda, invLambda, pi, pi0, beta, beta2, nu, nu2, nu0, mu_m, delta, delta2);
       TERM(iter, 8) = part  - ELBO(iter);
       ELBO(iter) = part;
