@@ -29,8 +29,13 @@ check_fit <- function(fit, topics) {
 for (embedding in c(1L, 2L, 5L)) {
   fit <- run_QRSIDE(counts, pos, table, 2, 50, embedding, 3, FALSE, max_iter = 8)
   check_fit(fit, 2)
+  if (embedding == 2L) table_fit <- fit
   cat("PASS table input, full pipeline, embedding", embedding, "\n")
 }
+sparse_fit <- run_QRSIDE(Matrix::Matrix(counts, sparse = TRUE), pos, markers,
+                          2, 50, 2, 3, TRUE, max_iter = 8)
+stopifnot(isTRUE(all.equal(table_fit, sparse_fit)))
+cat("PASS sparse matrix and equivalent marker formats produce the same fit\n")
 fit <- run_QRSIDE(counts, pos, markers, 2, 50, 2, 3, TRUE)
 check_fit(fit, 2)
 cat("PASS list input, full pipeline, default 50 iterations\n")

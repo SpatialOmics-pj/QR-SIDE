@@ -25,5 +25,5 @@ LinkingTo:
   Rcpp,
   BH,
   RcppArmadillo
-SystemRequirements: C++14
+SystemRequirements: C++17, GNU make
 RoxygenNote: 7.3.1

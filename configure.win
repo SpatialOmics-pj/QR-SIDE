@@ -1,0 +1,3 @@
+#!/bin/sh
+# Windows uses the Rtools configuration in src/Makevars.win.
+exit 0

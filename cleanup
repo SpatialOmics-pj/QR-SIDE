@@ -1,2 +1,2 @@
 #!/bin/sh
-cp src/Makevars.in src/Makevars
+rm -f src/Makevars

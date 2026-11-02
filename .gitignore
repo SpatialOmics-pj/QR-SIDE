@@ -13,3 +13,4 @@ src/*.dll
 src/*.dylib
 
 QRSIDE.Rcheck/
+src/Makevars
